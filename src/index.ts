@@ -1,6 +1,19 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-console.log('Hello ts')
+import Provider from './provider'
+import { userRouter } from './routers/user'
+import { json } from './middlewares/json'
+import { url } from './middlewares/url'
 
-console.log('env', process.env.PORT)
+const PORT = process.env.PORT || 4000
+const BASE_URL = process.env.BASE_URL || 'http://localhost:'
+
+const provider = new Provider()
+
+provider.use(json)
+provider.use(url(`${BASE_URL}${PORT}`))
+
+provider.addRouter(userRouter)
+
+provider.listen(Number(PORT), () => console.log(`Server started on port ${PORT}`))

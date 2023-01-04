@@ -4,8 +4,8 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "start:dev": "nodemon",
-    "start:prod": "tsc && node ./dist/index.js"
+    "start:dev": "nodemon index.ts",
+    "start:prod": "tsc && node --experimental-specifier-resolution=node ./dist/index.js"
   },
   "author": "Ihar Tsykala",
   "license": "ISC",
@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
+    "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^5.47.0",
     "@typescript-eslint/parser": "^5.47.0",
     "eslint": "8.22.0",
