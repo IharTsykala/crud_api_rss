@@ -55,3 +55,5 @@ export const checkRequired = (
   }
   return false
 }
+
+export const createBodyUser = ({ name, age, hobbies }: IUser) => ({ name, age, hobbies })

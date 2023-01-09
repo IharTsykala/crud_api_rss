@@ -40,7 +40,6 @@ export class UserController {
 
   static addUser(req: IReq, res: IRes) {
     try {
-      console.log('addUser')
       const { body } = req
       const { code, message } = UserService.addUser(body)
       res.writeHead(code, headers)

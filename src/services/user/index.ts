@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import { checkRequired, getFieldsUserValidation } from '../../utils/user'
+import { checkRequired, createBodyUser, getFieldsUserValidation } from '../../utils/user'
 
 const dataBase = {
   users: [
@@ -29,10 +29,8 @@ export class UserService {
 
   static getUser(id: string) {
     const currentUser = dataBase.users.find((user) => user.id === id)
-    console.log('id', id)
     const regexExpUUID = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi
     const testUUID = regexExpUUID.test(id)
-    console.log('testUUID', testUUID)
     if (!testUUID) {
       return {
         code: 400,
@@ -50,9 +48,9 @@ export class UserService {
   }
 
   static addUser(user: IUser) {
-    const newUser = { ...user, id: uuidv4() }
-    const fieldsUserValidation = getFieldsUserValidation(newUser)
+    const newUser = { id: uuidv4(), ...createBodyUser(user) }
 
+    const fieldsUserValidation = getFieldsUserValidation(newUser)
     const requiredMessage = checkRequired(fieldsUserValidation, 'required', 'requiredMessage')
     if (requiredMessage) {
       return {
@@ -68,8 +66,7 @@ export class UserService {
         message: validationRulesMessage,
       }
     }
-
-    dataBase.users.push({ ...user, id: uuidv4() })
+    dataBase.users.push(newUser)
     return {
       code: 201,
       message: 'User was successfully added',
@@ -78,7 +75,7 @@ export class UserService {
 
   static updateUser(id: string, user: IUser) {
     const currentUser: IUser | undefined = dataBase.users.find((user) => user.id === id)
-    const fieldsUserValidation = getFieldsUserValidation({ ...user, id })
+    const fieldsUserValidation = getFieldsUserValidation({ ...createBodyUser(user), id })
 
     const regexExpUUID = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi
     const testUUID = regexExpUUID.test(id)
@@ -96,7 +93,6 @@ export class UserService {
       }
     }
     const requiredMessage = checkRequired(fieldsUserValidation, 'required', 'requiredMessage')
-    console.log('requiredMessage', requiredMessage)
     if (requiredMessage) {
       return {
         code: 400,
@@ -110,7 +106,7 @@ export class UserService {
         message: validationRulesMessage,
       }
     }
-    const newUser = { ...currentUser, ...user, id }
+    const newUser = { ...currentUser, ...createBodyUser(user), id }
 
     dataBase.users = dataBase.users.map((userDB) => (userDB.id === newUser.id ? newUser : userDB))
     return {
