@@ -43,7 +43,6 @@ export default class Provider implements IProvider {
       try {
         let body = ''
         req.on('data', (chunk) => {
-          // console.log(chunk)
           body = body + chunk
         })
 
@@ -95,8 +94,6 @@ export default class Provider implements IProvider {
 
   _getMask(req: IReq) {
     const { pathname = '/', method = 'GET' } = req
-
-    console.log(`[${pathname}][${method}]`)
 
     return `[${pathname}][${method}]`
   }

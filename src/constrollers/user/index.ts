@@ -6,7 +6,6 @@ export const headers = { 'Content-Type': 'application/json' }
 export class UserController {
   static getUsers(req: IReq, res: IRes) {
     try {
-      console.log('getUsers')
       const { code, users } = UserService.getUsers()
       if (!String(code).startsWith('2')) {
         throw new Error()
@@ -22,7 +21,6 @@ export class UserController {
 
   static getUser(req: IReq, res: IRes) {
     try {
-      console.log('getUser')
       const { id } = req
       const { code, user, message } = UserService.getUser(id)
       res.writeHead(code, headers)
@@ -53,7 +51,6 @@ export class UserController {
 
   static updateUser(req: IReq, res: IRes) {
     try {
-      console.log('updateUser')
       const { id, body } = req
       const { code, message } = UserService.updateUser(id, body)
       res.writeHead(code, headers)
@@ -67,7 +64,6 @@ export class UserController {
 
   static deleteUser(req: IReq, res: IRes) {
     try {
-      console.log('deleteUser')
       const { id } = req
       const { code, message } = UserService.deleteUser(id)
       res.writeHead(code, headers)

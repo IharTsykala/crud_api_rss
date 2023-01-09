@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid'
 import { checkRequired, createBodyUser, getFieldsUserValidation } from '../../utils/user'
 
-const dataBase = {
+export const dataBase: { [key: string]: IUser[] | [] } = {
   users: [
-    { id: '1', name: 'hello1', age: 23, hobbies: ['sport', 'education'] },
-    { id: '2', name: 'hello2', age: 25, hobbies: ['sport'] },
+    // { id: '1', name: 'hello1', age: 23, hobbies: ['sport', 'education'] },
+    // { id: '2', name: 'hello2', age: 25, hobbies: ['sport'] },
   ],
 }
 
@@ -48,7 +48,14 @@ export class UserService {
   }
 
   static addUser(user: IUser) {
-    const newUser = { id: uuidv4(), ...createBodyUser(user) }
+    if (!user) {
+      return {
+        code: 400,
+        message: 'Body is required',
+      }
+    }
+
+    const newUser: IUser = { id: uuidv4(), ...createBodyUser(user) }
 
     const fieldsUserValidation = getFieldsUserValidation(newUser)
     const requiredMessage = checkRequired(fieldsUserValidation, 'required', 'requiredMessage')
@@ -66,7 +73,10 @@ export class UserService {
         message: validationRulesMessage,
       }
     }
+
+    // @ts-ignore
     dataBase.users.push(newUser)
+
     return {
       code: 201,
       message: 'User was successfully added',
@@ -74,6 +84,13 @@ export class UserService {
   }
 
   static updateUser(id: string, user: IUser) {
+    if (!user) {
+      return {
+        code: 400,
+        message: 'Body is required',
+      }
+    }
+
     const currentUser: IUser | undefined = dataBase.users.find((user) => user.id === id)
     const fieldsUserValidation = getFieldsUserValidation({ ...createBodyUser(user), id })
 
