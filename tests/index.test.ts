@@ -1,10 +1,11 @@
 import request from 'supertest'
 
 import Provider from '../src/provider'
-import { json } from '../src/middlewares/json'
-import { url } from '../src/middlewares/url'
+
 import { userRouter } from '../src/routers/user'
-import { dataBase } from '../src/services/user'
+import { json, url } from '../src/middlewares'
+import { dataBase } from '../src/db'
+import { HEADERS, ROUTS_API, STATUS_CODES } from '../src/constants'
 
 const PORT = process.env.PORT || 4000
 const BASE_URL = process.env.BASE_URL || 'http://localhost:'
@@ -22,139 +23,142 @@ let id = ''
 
 describe('First scenario', () => {
   it('should return empty array', async () => {
-    const res = await request(server).get('/api/users')
+    const res = await request(server).get(ROUTS_API.USERS)
 
-    expect(res.statusCode).toBe(200)
-    expect(res.header['content-type']).toEqual('application/json')
+    expect(res.statusCode).toBe(STATUS_CODES['200'])
+    expect(res.header['content-type']).toEqual(HEADERS.CONTENT_TYPES['Content-Type'])
     expect(res.body).toEqual([])
   })
 
-  it('should create new user and return successfully message', async () => {
-    const res = await request(server)
-      .post('/api/users')
-      .send({
-        name: 'Ihar Tsykala',
-        age: 31,
-        hobbies: ['sport, mounts'],
-      })
+  it('should create new users and return successfully message', async () => {
+    const user = {
+      name: 'Ihar Tsykala',
+      age: 31,
+      hobbies: ['sport, mounts'],
+    }
+    const res = await request(server).post(ROUTS_API.USERS).send(user)
 
     id = dataBase.users[dataBase.users.length - 1].id
 
-    expect(res.statusCode).toBe(201)
-    expect(res.header['content-type']).toEqual('application/json')
-    expect(res.body.message).toBe('User was successfully added')
+    const { id: idUser, ...responseUser } = res.body
+
+    expect(res.statusCode).toBe(STATUS_CODES['201'])
+    expect(res.header['content-type']).toEqual(HEADERS.CONTENT_TYPES['Content-Type'])
+    expect(JSON.stringify(responseUser)).toBe(JSON.stringify(user))
   })
 
-  it('should return last added user by specified id', async () => {
-    const res = await request(server).get(`/api/users/${id}`)
+  it('should return last added users by specified id', async () => {
+    const res = await request(server).get(`${ROUTS_API.USERS}${id}`)
 
-    expect(res.statusCode).toBe(200)
-    expect(res.header['content-type']).toEqual('application/json')
+    expect(res.statusCode).toBe(STATUS_CODES['200'])
+    expect(res.header['content-type']).toEqual(HEADERS.CONTENT_TYPES['Content-Type'])
     expect(res.body.name).toBe('Ihar Tsykala')
     dataBase.users.length = 0
   })
 })
 
 describe('Second scenario', () => {
-  it('should create new user and return successfully message', async () => {
-    const res = await request(server)
-      .post('/api/users')
-      .send({
-        name: 'Denis Ivanov',
-        age: 51,
-        hobbies: ['running'],
-      })
+  it('should create new users and return successfully message', async () => {
+    const user = {
+      name: 'Denis Ivanov',
+      age: 51,
+      hobbies: ['running'],
+    }
+    const res = await request(server).post(ROUTS_API.USERS).send(user)
 
     id = dataBase.users[dataBase.users.length - 1].id
 
-    expect(res.statusCode).toBe(201)
-    expect(res.header['content-type']).toEqual('application/json')
-    expect(res.body.message).toBe('User was successfully added')
+    const { id: idUser, ...responseUser } = res.body
+
+    expect(res.statusCode).toBe(STATUS_CODES['201'])
+    expect(res.header['content-type']).toEqual(HEADERS.CONTENT_TYPES['Content-Type'])
+    expect(JSON.stringify(responseUser)).toBe(JSON.stringify(user))
   })
 
   it('should return message about id is not uuid', async () => {
-    const res = await request(server).get('/api/users/123')
+    const res = await request(server).get(`${ROUTS_API.USERS}123`)
 
-    expect(res.statusCode).toBe(400)
-    expect(res.header['content-type']).toEqual('application/json')
+    expect(res.statusCode).toBe(STATUS_CODES['400'])
+    expect(res.header['content-type']).toEqual(HEADERS.CONTENT_TYPES['Content-Type'])
     expect(res.body.message).toBe('id needed to be uuid')
   })
 
   it('should return array with length equal 1', async () => {
-    const res = await request(server).get('/api/users')
+    const res = await request(server).get(ROUTS_API.USERS)
 
-    expect(res.statusCode).toBe(200)
-    expect(res.header['content-type']).toEqual('application/json')
+    expect(res.statusCode).toBe(STATUS_CODES['200'])
+    expect(res.header['content-type']).toEqual(HEADERS.CONTENT_TYPES['Content-Type'])
     expect(res.body.length).toBe(1)
   })
 
-  it('should delete user by id', async () => {
-    const res = await request(server).delete(`/api/users/${id}`)
+  it('should delete users by id', async () => {
+    const res = await request(server).delete(`${ROUTS_API.USERS}${id}`)
 
-    expect(res.statusCode).toBe(204)
+    expect(res.statusCode).toBe(STATUS_CODES['204'])
   })
 
   it('should return empty array', async () => {
-    const res = await request(server).get('/api/users')
+    const res = await request(server).get(ROUTS_API.USERS)
 
-    expect(res.statusCode).toBe(200)
-    expect(res.header['content-type']).toEqual('application/json')
+    expect(res.statusCode).toBe(STATUS_CODES['200'])
+    expect(res.header['content-type']).toEqual(HEADERS.CONTENT_TYPES['Content-Type'])
     expect(res.body).toEqual([])
   })
 })
 
 describe('Third scenario', () => {
-  it('should create new user and return successfully message', async () => {
-    const res = await request(server)
-      .post('/api/users')
-      .send({
-        name: 'Ekaterina Anisovich',
-        age: 51,
-        hobbies: ['painting'],
-      })
+  it('should create new users and return successfully message', async () => {
+    const user = {
+      name: 'Ekaterina Anisovich',
+      age: 51,
+      hobbies: ['painting'],
+    }
+    const res = await request(server).post(ROUTS_API.USERS).send(user)
 
     id = dataBase.users[dataBase.users.length - 1].id
 
-    expect(res.statusCode).toBe(201)
-    expect(res.header['content-type']).toEqual('application/json')
-    expect(res.body.message).toBe('User was successfully added')
+    const { id: idUser, ...responseUser } = res.body
+
+    expect(res.statusCode).toBe(STATUS_CODES['201'])
+    expect(res.header['content-type']).toEqual(HEADERS.CONTENT_TYPES['Content-Type'])
+    expect(JSON.stringify(responseUser)).toBe(JSON.stringify(user))
   })
 
-  it('should return message that user by id not found', async () => {
+  it('should return message that users by id not found', async () => {
     const res = await request(server).get('/api/users/3e3ca8d8-fa44-59bc-722c-4568425bb678')
 
-    expect(res.statusCode).toBe(404)
-    expect(res.header['content-type']).toEqual('application/json')
-    expect(res.body.message).toBe('Is not exist user with this id')
+    expect(res.statusCode).toBe(STATUS_CODES['404'])
+    expect(res.header['content-type']).toEqual(HEADERS.CONTENT_TYPES['Content-Type'])
+    expect(res.body.message).toBe('Is not exist users with this id')
   })
 
   it('should return message that body is required', async () => {
     const res = await request(server).put('/api/users/3e3ca8d8-fa44-59bc-722c-4568425bb678')
 
-    expect(res.statusCode).toBe(400)
-    expect(res.header['content-type']).toEqual('application/json')
+    expect(res.statusCode).toBe(STATUS_CODES['400'])
+    expect(res.header['content-type']).toEqual(HEADERS.CONTENT_TYPES['Content-Type'])
     expect(res.body.message).toBe('Body is required')
   })
 
-  it('should return message that user by id not found', async () => {
+  it('should return message that users by id not found', async () => {
     const res = await request(server).delete('/api/users/3e3ca8d8-fa44-59bc-722c-4568425bb678')
 
-    expect(res.statusCode).toBe(404)
-    expect(res.header['content-type']).toEqual('application/json')
-    expect(res.body.message).toBe('Is not exist user with this id')
+    expect(res.statusCode).toBe(STATUS_CODES['404'])
+    expect(res.header['content-type']).toEqual(HEADERS.CONTENT_TYPES['Content-Type'])
+    expect(res.body.message).toBe('Is not exist users with this id')
   })
 
-  it('should delete user by id', async () => {
-    const res = await request(server).delete(`/api/users/${id}`)
+  it('should delete users by id', async () => {
+    const res = await request(server).delete(`${ROUTS_API.USERS}${id}`)
 
-    expect(res.statusCode).toBe(204)
+    expect(res.statusCode).toBe(STATUS_CODES['204'])
   })
 
   it('should return length users equal 0', async () => {
-    const res = await request(server).get('/api/users/')
+    const res = await request(server).get(ROUTS_API.USERS)
 
-    expect(res.statusCode).toBe(200)
-    expect(res.header['content-type']).toEqual('application/json')
+    expect(res.statusCode).toBe(STATUS_CODES['200'])
+    expect(res.header['content-type']).toEqual(HEADERS.CONTENT_TYPES['Content-Type'])
     expect(res.body.length).toEqual(0)
   })
 })

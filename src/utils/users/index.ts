@@ -1,15 +1,4 @@
-import { IUser } from '../services/user'
-
-export interface IValidateFieldUser {
-  fieldName: string;
-  required: boolean;
-  requiredMessage: string;
-  validationRules: boolean;
-  validationMessage: string;
-  [key: string]: string | boolean;
-}
-
-export type IValidateFieldsUser = IValidateFieldUser[]
+import { IUser, TValidateFieldsUser } from '../../interfaces'
 
 export const getFieldsUserValidation = (user: IUser) => {
   return [
@@ -45,7 +34,7 @@ export const getFieldsUserValidation = (user: IUser) => {
 }
 
 export const checkRequired = (
-  validateFieldsUser: IValidateFieldsUser,
+  validateFieldsUser: TValidateFieldsUser,
   fieldName: string,
   messageByFieldName: string
 ) => {

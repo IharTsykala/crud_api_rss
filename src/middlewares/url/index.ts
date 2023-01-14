@@ -1,8 +1,4 @@
-import { IReq } from '../interfaces/common'
-
-interface ISearchParams {
-  [key: string]: string;
-}
+import { IReq, ISearchParams } from '../../interfaces'
 
 export const url = (baseUrl: string) => (req: IReq) => {
   const urlObj = new URL(req.url, baseUrl)

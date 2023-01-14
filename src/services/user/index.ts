@@ -1,28 +1,16 @@
 import { v4 as uuidv4 } from 'uuid'
-import { checkRequired, createBodyUser, getFieldsUserValidation } from '../../utils/user'
 
-export const dataBase: { [key: string]: IUser[] | [] } = {
-  users: [
-    // { id: '1', name: 'hello1', age: 23, hobbies: ['sport', 'education'] },
-    // { id: '2', name: 'hello2', age: 25, hobbies: ['sport'] },
-  ],
-}
+import { checkRequired, createBodyUser, getFieldsUserValidation } from '../../utils'
 
-export interface IUser {
-  id: string;
-  name: string;
-  age: number;
-  hobbies: string[] | [];
-}
+import { RESPONSE_MESSAGES, STATUS_CODES } from '../../constants'
+import { IUser } from '../../interfaces'
 
-// interface ICheckUserFields {
-//   (props: { user: IUser }): boolean;
-// }
+import { dataBase } from '../../db'
 
 export class UserService {
   static getUsers() {
     return {
-      code: 200,
+      code: STATUS_CODES['200'],
       users: dataBase.users,
     }
   }
@@ -30,28 +18,29 @@ export class UserService {
   static getUser(id: string) {
     const currentUser = dataBase.users.find((user) => user.id === id)
     const regexExpUUID = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi
+
     const testUUID = regexExpUUID.test(id)
     if (!testUUID) {
       return {
-        code: 400,
-        message: 'id needed to be uuid',
+        code: STATUS_CODES['400'],
+        message: RESPONSE_MESSAGES.ID_IS_NOT_UUID,
       }
     }
 
     if (!currentUser) {
       return {
-        code: 404,
-        message: 'Is not exist user with this id',
+        code: STATUS_CODES['404'],
+        message: RESPONSE_MESSAGES.USER_IS_NOT_EXIST,
       }
     }
-    return { code: 200, user: currentUser }
+    return { code: STATUS_CODES['200'], user: currentUser }
   }
 
   static addUser(user: IUser) {
     if (!user) {
       return {
-        code: 400,
-        message: 'Body is required',
+        code: STATUS_CODES['400'],
+        message: RESPONSE_MESSAGES.BODY_IS_REQUIRED,
       }
     }
 
@@ -61,7 +50,7 @@ export class UserService {
     const requiredMessage = checkRequired(fieldsUserValidation, 'required', 'requiredMessage')
     if (requiredMessage) {
       return {
-        code: 400,
+        code: STATUS_CODES['400'],
         message: requiredMessage,
       }
     }
@@ -69,7 +58,7 @@ export class UserService {
     const validationRulesMessage = checkRequired(fieldsUserValidation, 'validationRules', 'validationMessage')
     if (validationRulesMessage) {
       return {
-        code: 400,
+        code: STATUS_CODES['400'],
         message: validationRulesMessage,
       }
     }
@@ -78,16 +67,16 @@ export class UserService {
     dataBase.users.push(newUser)
 
     return {
-      code: 201,
-      message: 'User was successfully added',
+      code: STATUS_CODES['201'],
+      user: newUser,
     }
   }
 
   static updateUser(id: string, user: IUser) {
     if (!user) {
       return {
-        code: 400,
-        message: 'Body is required',
+        code: STATUS_CODES['400'],
+        message: RESPONSE_MESSAGES.BODY_IS_REQUIRED,
       }
     }
 
@@ -98,28 +87,28 @@ export class UserService {
     const testUUID = regexExpUUID.test(id)
     if (!testUUID) {
       return {
-        code: 400,
-        message: 'id needed to be uuid',
+        code: STATUS_CODES['400'],
+        message: RESPONSE_MESSAGES.ID_IS_NOT_UUID,
       }
     }
 
     if (!currentUser) {
       return {
-        code: 404,
-        message: 'Is not exist user with this id',
+        code: STATUS_CODES['404'],
+        message: RESPONSE_MESSAGES.USER_IS_NOT_EXIST,
       }
     }
     const requiredMessage = checkRequired(fieldsUserValidation, 'required', 'requiredMessage')
     if (requiredMessage) {
       return {
-        code: 400,
+        code: STATUS_CODES['400'],
         message: requiredMessage,
       }
     }
     const validationRulesMessage = checkRequired(fieldsUserValidation, 'validationRules', 'validationMessage')
     if (validationRulesMessage) {
       return {
-        code: 400,
+        code: STATUS_CODES['400'],
         message: validationRulesMessage,
       }
     }
@@ -127,8 +116,8 @@ export class UserService {
 
     dataBase.users = dataBase.users.map((userDB) => (userDB.id === newUser.id ? newUser : userDB))
     return {
-      code: 200,
-      message: 'User was successfully updated',
+      code: STATUS_CODES['200'],
+      user: newUser,
     }
   }
 
@@ -139,21 +128,21 @@ export class UserService {
     const testUUID = regexExpUUID.test(id)
     if (!testUUID) {
       return {
-        code: 400,
-        message: 'id needed to be uuid',
+        code: STATUS_CODES['400'],
+        message: RESPONSE_MESSAGES.ID_IS_NOT_UUID,
       }
     }
 
     if (!currentUser) {
       return {
-        code: 404,
-        message: 'Is not exist user with this id',
+        code: STATUS_CODES['404'],
+        message: RESPONSE_MESSAGES.USER_IS_NOT_EXIST,
       }
     }
     dataBase.users = dataBase.users.filter((user) => user.id !== id)
     return {
-      code: '204',
-      message: 'User was successfully removed',
+      code: STATUS_CODES['204'],
+      message: RESPONSE_MESSAGES.USER_WAS_REMOVED,
     }
   }
 }

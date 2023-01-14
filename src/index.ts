@@ -3,8 +3,7 @@ dotenv.config()
 
 import Provider from './provider'
 import { userRouter } from './routers/user'
-import { json } from './middlewares/json'
-import { url } from './middlewares/url'
+import { json, url } from './middlewares'
 
 const PORT = process.env.PORT || 4000
 const BASE_URL = process.env.BASE_URL || 'http://localhost:'

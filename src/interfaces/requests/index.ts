@@ -12,8 +12,6 @@ export interface IEndpoints {
   [key: string]: { [key: string]: string | IHandler };
 }
 
-// interface IRequest {
-//   (method: string, path: string, handler: () => void): void;
-// }
-//
-// type TRequest = (method: string, path: string, handler: () => void) => void
+export interface ISearchParams {
+  [key: string]: string;
+}

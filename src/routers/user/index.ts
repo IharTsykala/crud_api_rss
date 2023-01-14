@@ -1,14 +1,16 @@
-import { Router } from '../index'
-import { UserController } from '../../constrollers/user'
+import { Router } from '../router'
+
+import { UserController } from '../../constrollers/users'
+import { ROUTS_API } from '../../constants'
 
 export const userRouter = new Router()
 
-userRouter.get('/api/users/:id', UserController.getUser)
+userRouter.get(ROUTS_API.USER_BY_ID, UserController.getUser)
 
-userRouter.get('/api/users', UserController.getUsers)
+userRouter.get(ROUTS_API.USERS, UserController.getUsers)
 
-userRouter.post('/api/users', UserController.addUser)
+userRouter.post(ROUTS_API.USERS, UserController.addUser)
 
-userRouter.put('/api/users/:id', UserController.updateUser)
+userRouter.put(ROUTS_API.USER_BY_ID, UserController.updateUser)
 
-userRouter.delete('/api/users/:id', UserController.deleteUser)
+userRouter.delete(ROUTS_API.USER_BY_ID, UserController.deleteUser)
