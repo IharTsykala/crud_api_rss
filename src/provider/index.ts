@@ -6,6 +6,7 @@ import { removeLastSlash } from '../utils'
 import { IMiddleware, IProvider, IServer, IReq } from '../interfaces'
 
 import { HEADERS, REQUEST_TYPES, RESPONSE_MESSAGES, ROUTS_API, STATUS_CODES } from '../constants'
+import { Worker } from 'cluster'
 
 export default class Provider implements IProvider {
   emitter: EventEmitter
@@ -96,5 +97,13 @@ export default class Provider implements IProvider {
 
   listen(port: number, callback: () => void) {
     this.server.listen(port, callback)
+  }
+
+  balancer(socket: IServer, current: number, workers: Worker[]) {
+    current === workers.length - 1 ? (current = 1) : current++
+    const worker = workers[current]
+    if (worker) {
+      worker.send({ name: 'socket' }, socket)
+    }
   }
 }
