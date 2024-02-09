@@ -1,0 +1,34 @@
+{
+  "name": "crud_api",
+  "vertion": "1.0.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "start:dev": "nodemon index.ts",
+    "start:prod": "tsc && node --experimental-specifier-resolution=node ./dist/index.js",
+    "start:multi": "ts-node ./src/cluster.ts",
+    "test": "jest"
+  },
+  "author": "Ihar Tsykala",
+  "license": "ISC",
+  "repository": "https://github.com/IharTsykala/crud_api_rss",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.5",
+    "@types/node": "^18.11.18",
+    "@types/supertest": "^2.0.12",
+    "@types/uuid": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.47.0",
+    "@typescript-eslint/parser": "^5.47.0",
+    "eslint": "8.22.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.3"
+  }
+}
