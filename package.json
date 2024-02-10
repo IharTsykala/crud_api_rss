@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "start:dev": "nodemon index.ts",
-    "start:prod": "tsc && node --experimental-specifier-resolution=node ./dist/index.js",
+    "start:prod": "tsc && node --experimental-specifier-resolution=node --loader ts-node/esm ./dist/index.js",
     "start:multi": "ts-node ./src/cluster.ts",
     "test": "jest"
   },

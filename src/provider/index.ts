@@ -1,12 +1,12 @@
 import http from 'http'
 import { EventEmitter } from 'events'
+import { Worker } from 'cluster'
 
 import { removeLastSlash } from '../utils'
 
 import { IMiddleware, IProvider, IServer, IReq } from '../interfaces'
 
 import { HEADERS, REQUEST_TYPES, RESPONSE_MESSAGES, ROUTS_API, STATUS_CODES } from '../constants'
-import { Worker } from 'cluster'
 
 export default class Provider implements IProvider {
   emitter: EventEmitter
@@ -19,9 +19,32 @@ export default class Provider implements IProvider {
     this.middlewares = []
   }
 
+  _setId(req: IReq) {
+    const { pathname } = req
+
+    let newPathname = removeLastSlash(pathname)
+    const statusIdUrl = [ROUTS_API.USERS].find((api) => newPathname.includes(api))
+
+    if (statusIdUrl) {
+      const splitPathname = pathname.split('/')
+      newPathname = splitPathname.slice(0, -1).concat(':id').join('/')
+      const id = splitPathname[splitPathname.length - 1]
+      req.id = id
+    }
+
+    req.pathname = newPathname
+    return req
+  }
+
+  _getMask(req: IReq) {
+    const { pathname = '/', method = REQUEST_TYPES.GET } = req
+    return `[${pathname}][${method}]`
+  }
+
   addRouter(router: { [key: string]: any }) {
     Object.keys(router.endpoints).forEach((path) => {
       const endpoint = router.endpoints[path]
+
       Object.keys(endpoint).forEach((method) => {
         this.emitter.on(this._getMask(this._setId({ pathname: path, method })), (req, res) => {
           const handler = endpoint[method]
@@ -67,28 +90,6 @@ export default class Provider implements IProvider {
         return
       }
     })
-  }
-
-  _getMask(req: IReq) {
-    const { pathname = '/', method = REQUEST_TYPES.GET } = req
-    return `[${pathname}][${method}]`
-  }
-
-  _setId(req: IReq) {
-    const { pathname } = req
-
-    let newPathname = removeLastSlash(pathname)
-    const statusIdUrl = [ROUTS_API.USERS].find((api) => newPathname.includes(api))
-
-    if (statusIdUrl) {
-      const splitPathname = pathname.split('/')
-      newPathname = splitPathname.slice(0, -1).concat(':id').join('/')
-      const id = splitPathname[splitPathname.length - 1]
-      req.id = id
-    }
-
-    req.pathname = newPathname
-    return req
   }
 
   use(middleware: IMiddleware) {
