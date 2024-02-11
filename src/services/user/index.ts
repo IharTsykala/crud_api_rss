@@ -3,20 +3,24 @@ import { v4 as uuidv4 } from 'uuid'
 import { checkRequired, createBodyUser, getFieldsUserValidation } from '../../utils'
 
 import { RESPONSE_MESSAGES, STATUS_CODES } from '../../constants'
-import { IUser } from '../../interfaces'
+import { IReq, IUser } from '../../interfaces'
 
-import { dataBase } from '../../db'
+// import { dataBase } from '../../db'
 
 export class UserService {
-  static getUsers() {
+  static getUsers(req: IReq) {
+    const users = req.dataBase.data.users
+
     return {
       code: STATUS_CODES['200'],
-      users: dataBase.users,
+      users,
     }
   }
 
-  static getUser(id: string) {
-    const currentUser = dataBase.users.find((user) => user.id === id)
+  static getUser(id: string, req: IReq) {
+    const dataBase = req.dataBase
+
+    const currentUser = dataBase.data.users.find((user: IUser) => user.id === id)
     const regexExpUUID = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi
 
     const testUUID = regexExpUUID.test(id)
@@ -36,7 +40,9 @@ export class UserService {
     return { code: STATUS_CODES['200'], user: currentUser }
   }
 
-  static addUser(user: IUser) {
+  static addUser(user: IUser, req: IReq) {
+    const dataBase = req.dataBase
+
     if (!user) {
       return {
         code: STATUS_CODES['400'],
@@ -63,8 +69,9 @@ export class UserService {
       }
     }
 
-    // @ts-ignore
-    dataBase.users.push(newUser)
+    dataBase.data.users.push(newUser)
+
+    dataBase.update(dataBase.data)
 
     return {
       code: STATUS_CODES['201'],
@@ -72,7 +79,9 @@ export class UserService {
     }
   }
 
-  static updateUser(id: string, user: IUser) {
+  static updateUser(id: string, user: IUser, req: IReq) {
+    const dataBase = req.dataBase
+
     if (!user) {
       return {
         code: STATUS_CODES['400'],
@@ -80,7 +89,7 @@ export class UserService {
       }
     }
 
-    const currentUser: IUser | undefined = dataBase.users.find((user) => user.id === id)
+    const currentUser: IUser | undefined = dataBase.data.users.find((user: IUser) => user.id === id)
     const fieldsUserValidation = getFieldsUserValidation({ ...createBodyUser(user), id })
 
     const regexExpUUID = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi
@@ -114,15 +123,20 @@ export class UserService {
     }
     const newUser = { ...currentUser, ...createBodyUser(user), id }
 
-    dataBase.users = dataBase.users.map((userDB) => (userDB.id === newUser.id ? newUser : userDB))
+    dataBase.data.users = dataBase.data.users.map((userDB: IUser) => (userDB.id === newUser.id ? newUser : userDB))
+
+    dataBase.update(dataBase.data)
+
     return {
       code: STATUS_CODES['200'],
       user: newUser,
     }
   }
 
-  static deleteUser(id: string) {
-    const currentUser = dataBase.users.find((user) => user.id === id)
+  static deleteUser(id: string, req: IReq) {
+    const dataBase = req.dataBase
+
+    const currentUser = dataBase.data.users.find((user: IUser) => user.id === id)
 
     const regexExpUUID = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi
     const testUUID = regexExpUUID.test(id)
@@ -139,7 +153,10 @@ export class UserService {
         message: RESPONSE_MESSAGES.USER_IS_NOT_EXIST,
       }
     }
-    dataBase.users = dataBase.users.filter((user) => user.id !== id)
+    dataBase.data.users = dataBase.data.users.filter((user: IUser) => user.id !== id)
+
+    dataBase.update(dataBase.data)
+
     return {
       code: STATUS_CODES['204'],
       message: RESPONSE_MESSAGES.USER_WAS_REMOVED,

@@ -7,7 +7,7 @@ import { catchError, checkUserResponse } from '../../utils'
 export class UserController {
   static getUsers(req: IReq, res: IRes) {
     try {
-      const { code, users } = UserService.getUsers()
+      const { code, users } = UserService.getUsers(req)
 
       if (users) {
         // res.writeHead(code, HEADERS.CONTENT_TYPES)
@@ -24,7 +24,7 @@ export class UserController {
   static getUser(req: IReq, res: IRes) {
     try {
       const { id } = req
-      const { code, user, message } = UserService.getUser(id)
+      const { code, user, message } = UserService.getUser(id, req)
 
       res.writeHead(code, HEADERS.CONTENT_TYPES)
 
@@ -37,7 +37,7 @@ export class UserController {
   static addUser(req: IReq, res: IRes) {
     try {
       const { body } = req
-      const { code, message, user } = UserService.addUser(body)
+      const { code, message, user } = UserService.addUser(body, req)
 
       res.writeHead(code, HEADERS.CONTENT_TYPES)
 
@@ -50,7 +50,7 @@ export class UserController {
   static updateUser(req: IReq, res: IRes) {
     try {
       const { id, body } = req
-      const { code, message, user } = UserService.updateUser(id, body)
+      const { code, message, user } = UserService.updateUser(id, body, req)
 
       res.writeHead(code, HEADERS.CONTENT_TYPES)
 
@@ -63,7 +63,7 @@ export class UserController {
   static deleteUser(req: IReq, res: IRes) {
     try {
       const { id } = req
-      const { code, message } = UserService.deleteUser(id)
+      const { code, message } = UserService.deleteUser(id, req)
 
       res.writeHead(code, HEADERS.CONTENT_TYPES)
 

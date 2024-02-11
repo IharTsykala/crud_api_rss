@@ -6,7 +6,7 @@
   "scripts": {
     "start:dev": "nodemon index.ts",
     "start:prod": "tsc && node --experimental-specifier-resolution=node --loader ts-node/esm ./dist/index.js",
-    "start:multi": "ts-node ./src/cluster.ts",
+    "start:multi": "node --no-warnings=ExperimentalWarning --loader ts-node/esm ./src/cluster.ts",
     "test": "jest"
   },
   "author": "Ihar Tsykala",

@@ -4,16 +4,17 @@ import { Worker } from 'cluster'
 
 import { removeLastSlash } from '../utils'
 
-import { IMiddleware, IProvider, IServer, IReq } from '../interfaces'
+import { IMiddleware, IProvider, IServer, IReq, IUser } from '../interfaces'
 
 import { HEADERS, REQUEST_TYPES, RESPONSE_MESSAGES, ROUTS_API, STATUS_CODES } from '../constants'
+import { Database } from '../db'
 
 export default class Provider implements IProvider {
   emitter: EventEmitter
   server: IServer
   middlewares: IMiddleware[]
 
-  constructor() {
+  constructor(private dataBase: Database) {
     this.emitter = new EventEmitter()
     this.server = this._createServer()
     this.middlewares = []
@@ -48,6 +49,7 @@ export default class Provider implements IProvider {
       Object.keys(endpoint).forEach((method) => {
         this.emitter.on(this._getMask(this._setId({ pathname: path, method })), (req, res) => {
           const handler = endpoint[method]
+          req.dataBase = this.dataBase
           handler(req, res)
         })
       })
@@ -101,10 +103,6 @@ export default class Provider implements IProvider {
   }
 
   balancer(socket: IServer, current: number, workers: Worker[]) {
-    current === workers.length - 1 ? (current = 1) : current++
-    const worker = workers[current]
-    if (worker) {
-      worker.send({ name: 'socket' }, socket)
-    }
+    // console.log('Provider222.dataBase', this.dataBase)
   }
 }

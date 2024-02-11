@@ -5,10 +5,15 @@ import Provider from './provider'
 import { userRouter } from './routers/user'
 import { json, url } from './middlewares'
 
+//memory db
+import { Database } from './db'
+
 const PORT = process.env.PORT || 4000
 const BASE_URL = process.env.BASE_URL || 'http://localhost:'
 
-const provider = new Provider()
+const databaseInstance: Database = Database.getInstance()
+
+const provider = new Provider(databaseInstance)
 
 provider.use(json)
 provider.use(url(`${BASE_URL}${PORT}`))
